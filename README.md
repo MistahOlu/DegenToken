@@ -16,6 +16,7 @@ The DegenToken contract implements the ERC-20 token standard and includes additi
 - **Minting:** Only the owner can mint new tokens.
 - **Burning:** Any holder can burn their tokens.
 - **Redeeming:** Users can redeem tokens for in-game assets (Amour, Sword, Bow) by transferring tokens to the contract.
+- **View Owned Assets:** Users can view the asset they currently own.
 
 ## Getting Started
 
@@ -23,9 +24,9 @@ The DegenToken contract implements the ERC-20 token standard and includes additi
 
 Ensure you have the following installed:
 
-- [Remix](https://remix.ethereum.org/)
-- [Avalanche Fuji Testnet account](https://docs.avax.network/build/tutorials/platform/create-a-fuji-testnet-faucet/)
 
+- [Remix](https://remixethereum.org/)
+- [contract_address]()
 
 ### Verification
 
@@ -46,7 +47,7 @@ pragma solidity 0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DegenToken is ERC20("Degen", "DGN"), Ownable {
+contract DegenToken is ERC20("Degen", "DGN"), Ownable(msg.sender) {
     
     enum Asset {
         Amour, 
@@ -55,8 +56,6 @@ contract DegenToken is ERC20("Degen", "DGN"), Ownable {
     }
 
     mapping (address => Asset) public assetOwned;
-
-    constructor() Ownable() {}
 
     function mintToken() external onlyOwner {
         _mint(msg.sender, 1000);
@@ -76,6 +75,10 @@ contract DegenToken is ERC20("Degen", "DGN"), Ownable {
             assetOwned[msg.sender] = Asset.Sword;
         }
         else revert("invalid input");
+    }
+
+    function getOwnedAssert() external view returns (Asset) {
+        return assetOwned[msg.sender];
     }
 
     function burnToken(uint256 amount) external {
@@ -106,6 +109,14 @@ function redeemToken(uint choice) external
 - Choice 2: Bow (60 DGN)
 - Choice 3: Sword (40 DGN)
 
+### Viewing Owned Assets
+
+Users can view the asset they currently own:
+
+```solidity
+function getOwnedAssert() external view returns (Asset)
+```
+
 ### Burning Tokens
 
 Any holder can burn their tokens:
@@ -121,7 +132,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
-
----
-
-This README provides a clear overview of the DegenToken project. It should help other developers understand and work with the project effectively.
